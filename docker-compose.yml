@@ -6,6 +6,7 @@ services:
     image: hitsql/frontend:latest
     hostname: frontend
     container_name: frontend
+    build: ./frontend
     ports:
       - '80:80'
     depends_on:
@@ -16,5 +17,6 @@ services:
     image: hitsql/backend:latest
     hostname: backend
     container_name: backend
+    build: ./backend
     # ports:
     #   - '8000:8000'
