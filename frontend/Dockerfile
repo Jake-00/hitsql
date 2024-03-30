@@ -28,5 +28,5 @@ FROM nginx:1.13 as production-build
 RUN rm -rf /usr/share/nginx/html/*
 COPY --from=build /app/nginx/nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /app/dist /usr/share/nginx/html
-EXPOSE 8080
+EXPOSE 3000
 ENTRYPOINT ["nginx", "-g", "daemon off;"]
