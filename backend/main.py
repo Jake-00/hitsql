@@ -29,7 +29,7 @@ def transpile(item: Item):
     is_transpiled = '0'
     err_msg = '\{\}'
     try:
-        output_sql = sqlglot.transpile(item.input_sql, read=item.input_dialect, write=item.output_dialect)[0]
+        output_sql = sqlglot.transpile(item.input_sql, read=item.input_dialect, write=item.output_dialect, pretty=True)[0]
         is_transpiled = '1'
     except sqlglot.errors.ParseError as e:
         err_msg = e.errors
