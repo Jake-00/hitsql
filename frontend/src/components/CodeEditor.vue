@@ -7,21 +7,15 @@
   import { oneDark } from '@codemirror/theme-one-dark'
   import { acceptCompletion } from "@codemirror/autocomplete"
   import { useRequest } from 'vue-hooks-plus'
-  import { postTransSQL } from './services'
+  import { getDialectsList, postTransSQL } from './services'
 
-  // // Set native labels' props
-  // const size = ref(0.5)
-  const placeHolderStr = ref('type the code...')
+  const placeHolderStr = ref('type the sql...')
   const codemirrorStyle = {
     width: '100%',
     height: '100%',
     backgroundColor: '#fff',
     color: '#333'
   }
-  // const buttonNames = {
-  //   test: '测试代码',
-  //   submit: '提交'
-  // }
   
   // Set editor-related parameters and functions
   const code = ref(Text.of(['']))
@@ -32,21 +26,18 @@
     // return code
   }
 
-  // Under setup
-  // If the asynchronous function is not called in the outermost layer,
-  // but inside the function, it needs to be called manually
-  // function transpileSQL() {
-  //   replicatedCode.value = code.value
-  //   const { run, data, loading } = useRequest(() => postTransSQL(replicatedCode.value), {manual: true})
-  //   run()
-  //   console.log(loading)
-  //   console.log(loading ? data.value?.data.output_dialect : 'no')
-  //   transpiledResult.value = data.value?.data.output_sql || ''
-  //   console.log(transpiledResult.value)
-  // }
-  const { run, data, loading } = useRequest(() => postTransSQL(code.value), {manual: true})
-  // const pre_code = ref('')
-  // ref(loading.value ? 'loading' : data.value?.output_sql)
+  // Setting dialect bar
+  const dialects_info = getDialectsList()
+  const input_dialect = ref('hive')
+  const output_dialect = ref('presto')
+  function update_in_dialect(item_obj: any) {
+    input_dialect.value = item_obj.value
+  }
+  function update_out_dialect(item_obj: any) {
+    output_dialect.value = item_obj.value
+  }
+
+  const { run, data, loading } = useRequest(() => postTransSQL(code.value, input_dialect.value, output_dialect.value), {manual: true})
   const pre_code = computed(() => {
     return loading.value ? 'loading' : data.value?.output_sql || ''
   })
@@ -77,10 +68,17 @@
         @update="updateCode"
         :extensions="extensions"
       ></codemirror>
+      <a-select :style="{width:'160px'}" placeholder="Select" :trigger-props="{ autoFitPopupMinWidth: true }" @change="update_in_dialect">
+        <a-option v-for="dialect of dialects_info" :value="dialect" :label="dialect.label" />
+      </a-select>
+      <icon-arrow-right />
+      <a-select :style="{width:'160px'}" placeholder="Select" :trigger-props="{ autoFitPopupMinWidth: true }" @change="update_out_dialect">
+        <a-option v-for="dialect of dialects_info" :value="dialect" :label="dialect.label" />
+      </a-select>
+      <a-space>
+        <a-button type="primary" shape="round" @click="run">transpile</a-button>
+      </a-space>
     </div>
-    <a-space>
-      <a-button type="primary" shape="round" @click="run">transpile</a-button>
-    </a-space>
   </a-layout-sider>
   <a-layout-content>
     <highlightjs language='sql' :code="pre_code" />

@@ -15,3 +15,7 @@ export type TranspilationInfoType = {
     is_transpiled: string,
     errs_msg: string
 }
+
+export type DialectsInfoType = {
+    dialects_info: string
+}

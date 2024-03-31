@@ -1,33 +1,29 @@
 import { request } from '../network/axios'
-import type { TranspilationInfoType, NameType } from './data'
+import type { TranspilationInfoType, DialectsInfoType } from './data'
 import { Text }from"@codemirror/state"
 
-export async function getUserInfo() {
-  return request<NameType>('https://www.fastmock.site/mock/ca8533cc667844de72db39a6b8ab925a/quiz/id', {
-    params: {
-      // id
-    },
-    method: 'GET' // 'POST'
-  })
+// == setup service == //
+export function getDialectsList() {
+  return [{
+    value: 'hive',
+    label: 'Hive',
+    other: 'extra'
+  }, {
+    value: 'presto',
+    label: 'Presto',
+    other: 'extra'
+  }]
 }
 
-export async function postTransSQL(inputSQL: Text) {
-  // return request<TranspilationInfoType>('/', {
-  //   data: {
-  //     input_sql: inputSQL,
-  //     output_sql: '',
-  //     input_dialect: 'hive',
-  //     output_dialect: 'trino',
-  //   },
-  //   method: 'POST' // 'POST'
-  // })
+// == user service == //
+export async function postTransSQL(inputSQL: Text, input_dialect: string, output_dialect: string) {
   return request<TranspilationInfoType>('/transpile', {
     data: {
       input_sql: inputSQL.toString(),  // inputSQL would raise 400
       output_sql: '',
-      input_dialect: 'hive',
-      output_dialect: 'trino',
+      input_dialect: input_dialect,
+      output_dialect: output_dialect,
     },
-    method: 'POST' // 'POST'
+    method: 'POST'
   })
 }
