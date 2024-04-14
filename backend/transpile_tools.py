@@ -4,7 +4,7 @@ from sqlglot.tokens import Token
 from typing import *
 
 
-def get_unmatched_tokens(read_tokens: List[str],
+def get_unmatched_tokens_seq(read_tokens: List[str],
                               write_tokens: List[str],
                               read_tokens_org_idx: Tuple[int, int],
                               write_tokens_org_idx: Tuple[int, int],
@@ -26,8 +26,11 @@ def get_unmatched_tokens(read_tokens: List[str],
                     write_end_idx = j
     
     if max_len <= 1:
-        read_unmatched_lst.append(read_tokens_org_idx)
-        write_unmatched_lst.append(write_tokens_org_idx)
+        in_unmatched_tokens_idx, out_unmatched_tokens_idx = unmatched_tokens_prune(read_tokens, 
+                                                                                   write_tokens, 
+                                                                                   read_tokens_org_idx, write_tokens_org_idx)
+        read_unmatched_lst += in_unmatched_tokens_idx
+        write_unmatched_lst += out_unmatched_tokens_idx
         return
     
     read_start_idx = read_end_idx - max_len
@@ -37,7 +40,7 @@ def get_unmatched_tokens(read_tokens: List[str],
                               read_start_idx + read_tokens_org_idx[0], )
     write_left_node_abs_pos = (0 + write_tokens_org_idx[0], 
                                write_start_idx + write_tokens_org_idx[0], )
-    get_unmatched_tokens(
+    get_unmatched_tokens_seq(
         read_tokens[0: read_start_idx],
         write_tokens[0: write_start_idx],
         # calculate absolute position in original tokens before slicing
@@ -50,14 +53,35 @@ def get_unmatched_tokens(read_tokens: List[str],
                                read_tokens_org_idx[1], )
     write_right_node_abs_pos = (write_end_idx + write_tokens_org_idx[0],
                                 write_tokens_org_idx[1], )
-    get_unmatched_tokens(
+    get_unmatched_tokens_seq(
         read_tokens[read_end_idx: len(read_tokens)],
         write_tokens[write_end_idx: len(write_tokens)],
         read_right_node_abs_pos,
         write_right_node_abs_pos,
         read_unmatched_lst, write_unmatched_lst
     )
-    
+
+def unmatched_tokens_prune(read_tokens
+                           , write_tokens
+                           , read_tokens_org_idx
+                           , write_tokens_org_idx):
+    in_tokens_len = read_tokens_org_idx[1]-read_tokens_org_idx[0]
+    out_tokens_len = write_tokens_org_idx[1]-write_tokens_org_idx[0]
+    if in_tokens_len != out_tokens_len:
+        return ([read_tokens_org_idx], [write_tokens_org_idx], )
+    # token by token replacement
+    # range_idx
+    in_unmatched_tokens_idx_lst, out_unmatched_tokens_idx_lst = [], []
+    for idx, read_token in enumerate(read_tokens):
+        if read_token != write_tokens[idx]:
+            in_unmatched_tokens_idx_lst.append(
+                (read_tokens_org_idx[0] + idx, read_tokens_org_idx[0] + idx + 1, )
+            )
+            out_unmatched_tokens_idx_lst.append(
+                (write_tokens_org_idx[0] + idx, write_tokens_org_idx[0] + idx + 1, )
+            )
+    return (in_unmatched_tokens_idx_lst, out_unmatched_tokens_idx_lst, )
+
 def get_tokens_lst(sql_dialect, sql):
     POSTGRES_LIKE_DIALECTS = ['postgres', 'duckdb', 'presto', 'trino']
     identifier_replace_flag = False 
@@ -129,7 +153,7 @@ def customized_transpile(input_sql: str,
     read_unmatched_lst, write_unmatched_lst = [], []
     read_tokens_org_idx = (0, len(read_tokens_text_lst), )
     write_tokens_org_idx = (0, len(write_tokens_text_lst), )
-    get_unmatched_tokens(read_tokens_text_lst, write_tokens_text_lst,
+    get_unmatched_tokens_seq(read_tokens_text_lst, write_tokens_text_lst,
                             read_tokens_org_idx, write_tokens_org_idx,
                             read_unmatched_lst, write_unmatched_lst)
     transpile_sql = replace_sql_tokens(input_sql, 
