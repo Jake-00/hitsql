@@ -4,10 +4,13 @@
   import { Text } from "@codemirror/state"
   import { Codemirror } from 'vue-codemirror'
   import { sql } from '@codemirror/lang-sql'
-  import { oneDark } from '@codemirror/theme-one-dark'
   import { acceptCompletion } from "@codemirror/autocomplete"
   import { useRequest } from 'vue-hooks-plus'
   import { getDialectsList, postTransSQL } from './services'
+  import { useClipboard } from '@vueuse/core'
+  import { Message } from '@arco-design/web-vue'
+  import { h } from 'vue'
+  import { IconCheckCircle } from '@arco-design/web-vue/es/icon'
 
   const placeHolderStr = ref('type the sql...')
   const codemirrorStyle = {
@@ -55,6 +58,21 @@
     // using tab to autocomplete 
     keymap.of([{key: "Tab", run: acceptCompletion}])
   ]
+
+  // clipboard
+  const source = ref('Hello')
+  const { text, copy, copied, isSupported } = useClipboard({ source })
+  const clip_with_msg = (pre_code: string) => {
+    copy(pre_code)
+    Message.info(
+      {
+        content:'Copied!'
+        , position:'bottom'
+        , icon: () => h(IconCheckCircle)
+      }
+    )
+  }
+
 </script>
 
 <template>
@@ -82,6 +100,9 @@
   </a-layout-sider>
   <a-layout-content>
     <highlightjs language='sql' :code="pre_code" />
+    <a-space class="copy-button">
+        <a-button type="primary" shape="round" @click="clip_with_msg(pre_code)">copy</a-button>
+    </a-space>
   </a-layout-content>
 </template>
 
