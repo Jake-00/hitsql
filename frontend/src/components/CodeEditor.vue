@@ -61,7 +61,7 @@
 
   // clipboard
   const source = ref('Hello')
-  const { text, copy, copied, isSupported } = useClipboard({ source })
+  const { text, copy, copied, isSupported } = useClipboard({ source: source, legacy: true })
   const clip_with_msg = (pre_code: string) => {
     copy(pre_code)
     Message.info(
@@ -101,7 +101,7 @@
   <a-layout-content>
     <highlightjs language='sql' :code="pre_code" />
     <a-space class="copy-button">
-        <a-button type="primary" shape="round" @click="clip_with_msg(pre_code)">copy</a-button>
+      <a-button v-if="isSupported" type="primary" shape="round" @click="clip_with_msg(pre_code)">copy</a-button>
     </a-space>
   </a-layout-content>
 </template>
