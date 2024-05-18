@@ -38,6 +38,7 @@ def transpile(item: Item):
         is_transpiled = '1'
     except sqlglot.errors.ParseError as e:
         err_msg = e.errors
+        item.output_sql = err_msg[0].get('description', '')
     else:
         item.output_sql = customized_transpile(item.input_sql, item.input_dialect, 
                                                output_sql, item.output_dialect)
