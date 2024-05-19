@@ -86,11 +86,11 @@
         @update="updateCode"
         :extensions="extensions"
       ></codemirror>
-      <a-select :style="{width:'160px'}" placeholder="Select" :trigger-props="{ autoFitPopupMinWidth: true }" @change="update_in_dialect">
+      <a-select :style="{width:'160px'}" placeholder="Hive" :trigger-props="{ autoFitPopupMinWidth: true }" @change="update_in_dialect">
         <a-option v-for="dialect of dialects_info" :value="dialect" :label="dialect.label" />
       </a-select>
       <icon-arrow-right />
-      <a-select :style="{width:'160px'}" placeholder="Select" :trigger-props="{ autoFitPopupMinWidth: true }" @change="update_out_dialect">
+      <a-select :style="{width:'160px'}" placeholder="Presto" :trigger-props="{ autoFitPopupMinWidth: true }" @change="update_out_dialect">
         <a-option v-for="dialect of dialects_info" :value="dialect" :label="dialect.label" />
       </a-select>
       <a-space>
