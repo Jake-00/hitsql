@@ -138,7 +138,13 @@ def replace_sql_tokens(
             write_unmatched_org_start_idx = write_tokens_lst[write_tokens_start].start
             write_unmatched_org_end_idx = write_tokens_lst[write_tokens_end-1].end  # write_tokens_end-1
             
-            read_sql = read_sql[:read_unmatched_org_start_idx] + write_sql[write_unmatched_org_start_idx:write_unmatched_org_end_idx+1] + read_sql[read_unmatched_org_end_idx+1:]
+            if len(read_sql[:read_unmatched_org_start_idx]) >= 1 and read_sql[read_unmatched_org_start_idx-1]:
+                first_part = read_sql[:read_unmatched_org_start_idx]+' '
+            else:
+                first_part = read_sql[:read_unmatched_org_start_idx]
+            second_part = write_sql[write_unmatched_org_start_idx:write_unmatched_org_end_idx+1]
+            third_part = read_sql[read_unmatched_org_end_idx+1:]
+            read_sql = first_part + second_part + third_part
         
     return read_sql
 
