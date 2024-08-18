@@ -16,14 +16,15 @@ export function getDialectsList() {
 }
 
 // == user service == //
-export async function postTransSQL(inputSQL: Text, input_dialect: string, output_dialect: string) {
-  return request<TranspilationInfoType>('/transpile', {
-    data: {
-      input_sql: inputSQL.toString(),  // inputSQL would raise 400
-      output_sql: '',
-      input_dialect: input_dialect,
-      output_dialect: output_dialect,
-    },
-    method: 'POST'
-  })
+export async function postTransSQL(is_llm: boolean, inputSQL: Text, input_dialect: string, output_dialect: string) {
+  const req_api = is_llm ? '/transpile' : '/transpile-llm';
+  return request<TranspilationInfoType>(req_api, {
+      data: {
+        input_sql: inputSQL.toString(),  // inputSQL would raise 400
+        output_sql: '',
+        input_dialect: input_dialect,
+        output_dialect: output_dialect,
+      },
+      method: 'POST'
+    })
 }

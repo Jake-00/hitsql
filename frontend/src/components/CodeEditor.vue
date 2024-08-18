@@ -40,7 +40,7 @@
     output_dialect.value = item_obj.value
   }
 
-  const { run, data, loading } = useRequest(() => postTransSQL(code.value, input_dialect.value, output_dialect.value), {manual: true})
+  const { run, data, loading } = useRequest((is_llm: boolean) => postTransSQL(is_llm, code.value, input_dialect.value, output_dialect.value), {manual: true})
   const pre_code = computed(() => {
     return loading.value ? 'loading' : data.value?.output_sql || ''
   })
@@ -86,15 +86,18 @@
         @update="updateCode"
         :extensions="extensions"
       ></codemirror>
-      <a-select :style="{width:'160px'}" placeholder="Hive" :trigger-props="{ autoFitPopupMinWidth: true }" @change="update_in_dialect">
+      <a-select :style="{width:'160px'}" placeholder="Hive" :default-value="dialects_info[0]" :trigger-props="{ autoFitPopupMinWidth: true }" @change="update_in_dialect">
         <a-option v-for="dialect of dialects_info" :value="dialect" :label="dialect.label" />
       </a-select>
       <icon-arrow-right />
-      <a-select :style="{width:'160px'}" placeholder="Presto" :trigger-props="{ autoFitPopupMinWidth: true }" @change="update_out_dialect">
+      <a-select :style="{width:'160px'}" placeholder="Presto" :default-value="dialects_info[1]" :trigger-props="{ autoFitPopupMinWidth: true }" @change="update_out_dialect">
         <a-option v-for="dialect of dialects_info" :value="dialect" :label="dialect.label" />
       </a-select>
       <a-space>
-        <a-button type="primary" shape="round" @click="run">transpile</a-button>
+        <a-button type="primary" shape="round" @click="run(false)">transpile</a-button>
+      </a-space>
+      <a-space>
+        <a-button type="primary" shape="round" @click="run(true)">transpile ai</a-button>
       </a-space>
     </div>
   </a-layout-sider>

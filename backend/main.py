@@ -4,6 +4,9 @@ from pydantic import BaseModel
 import sqlglot
 import json
 from transpile_tools import customized_transpile
+# from hugchat import hugchat
+# from hugchat.login import Login
+from dotenv import dotenv_values
 
 
 class Item(BaseModel):
@@ -22,10 +25,6 @@ app = FastAPI()
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
-
-# @app.get("/items/{item_id}")
-# def read_item(item_id: int, q: Union[str, None] = None):
-#     return {"item_id": item_id, "q": q}
 
 
 @app.post("/transpile")
@@ -47,16 +46,17 @@ def transpile(item: Item):
     item.err_msg = err_msg
     return item
 
+
 @app.get("/get_dialects")
 def get_dialects_info():
     dialects_upper = list(sqlglot.Dialects.__members__.keys())
-    dialect_objs_arr = [
+    return [
             {
                 'value': dialect_upper.lower(),
                 'label': dialect_upper.lower(),
                 'other': 'extra'
             } for dialect_upper in dialects_upper]
-    dialects_json = json.dumps(dialect_objs_arr)
-    dialects_info = DialectsInfo()
-    dialects_info.dialects_info = dialects_json
-    return dialects_info
+    # return json.dumps(dialect_objs_arr)
+    # dialects_info = DialectsInfo()
+    # dialects_info.dialects_info = dialects_json
+    # return dialects_info

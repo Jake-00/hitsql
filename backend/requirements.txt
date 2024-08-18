@@ -3,3 +3,5 @@ pydantic==2.6.4
 sqlglot==23.0.5
 sqlglotrs==0.1.2
 uvicorn==0.29.0
+hugchat==0.4.5
+python-dotenv==0.21.0
