@@ -73,6 +73,8 @@
     )
   }
 
+  // dialects selectors
+
 </script>
 
 <template>
@@ -86,19 +88,19 @@
         @update="updateCode"
         :extensions="extensions"
       ></codemirror>
-      <a-select :style="{width:'160px'}" placeholder="Hive" :default-value="dialects_info[0]" :trigger-props="{ autoFitPopupMinWidth: true }" @change="update_in_dialect">
+      <a-select :style="{width:'160px'}" :default-value="dialects_info[7]" :trigger-props="{ autoFitPopupMinWidth: true }" @change="update_in_dialect" allow-search>
         <a-option v-for="dialect of dialects_info" :value="dialect" :label="dialect.label" />
       </a-select>
       <icon-arrow-right />
-      <a-select :style="{width:'160px'}" placeholder="Presto" :default-value="dialects_info[1]" :trigger-props="{ autoFitPopupMinWidth: true }" @change="update_out_dialect">
+      <a-select :style="{width:'160px'}" :default-value="dialects_info[11]" :trigger-props="{ autoFitPopupMinWidth: true }" @change="update_out_dialect" allow-search>
         <a-option v-for="dialect of dialects_info" :value="dialect" :label="dialect.label" />
       </a-select>
       <a-space>
         <a-button type="primary" shape="round" @click="run(false)">transpile</a-button>
       </a-space>
-      <a-space>
+      <!-- <a-space>
         <a-button type="primary" shape="round" @click="run(true)">transpile ai</a-button>
-      </a-space>
+      </a-space> -->
     </div>
   </a-layout-sider>
   <a-layout-content>

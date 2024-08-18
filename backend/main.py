@@ -1,12 +1,8 @@
-from typing import Union
 from fastapi import FastAPI
 from pydantic import BaseModel
 import sqlglot
-import json
 from transpile_tools import customized_transpile
-# from hugchat import hugchat
-# from hugchat.login import Login
-from dotenv import dotenv_values
+from databases_name import DATABASE_MAP
 
 
 class Item(BaseModel):
@@ -49,13 +45,12 @@ def transpile(item: Item):
 
 @app.get("/get_dialects")
 def get_dialects_info():
-    dialects_upper = list(sqlglot.Dialects.__members__.keys())
     return [
             {
-                'value': dialect_upper.lower(),
-                'label': dialect_upper.lower(),
+                'label': k,
+                'value': v,
                 'other': 'extra'
-            } for dialect_upper in dialects_upper]
+            } for k, v in DATABASE_MAP.items()]
     # return json.dumps(dialect_objs_arr)
     # dialects_info = DialectsInfo()
     # dialects_info.dialects_info = dialects_json
